@@ -10,7 +10,7 @@ import GameLevel1 from '../views/GameLevel1.vue';
 import GameLevel2 from '../views/GameLevel2.vue';
 import Introduction from './components/level1/Introduction.vue';
 import ProductSelection from './components/level1/ProductSelection.vue';
-import MarketResearch from './components/level1/H/MarketResearch.vue';
+import MarketResearch from './components/level1/Highdemand/MarketResearch.vue';
 import BudgetAllocation from './components/level1/BudgetAllocation.vue';
 import GoalSetting from './components/level1/GoalSetting.vue';
 import HighDemandProduct from './components/level1/HighDemandProduct.vue'
@@ -34,6 +34,7 @@ import PricingStrategy2 from './components/level1/niche/PricingStrategy.vue';
 import ProductDifferentiation from './components/level1/niche/ProductDifferentiation.vue';
 import RiskManagement2 from './components/level1/niche/RiskManagement.vue';
 import TargetAudienceProfiling from './components/level1/niche/TargetAudienceProfiling.vue';
+import FeasibilityStudy from './components/level1/innovative/FeasibilityStudy.vue';
 const routes = [
   { path: '/', component: Home },
   { path: '/game-level-1', component: GameLevel1 },
@@ -85,6 +86,12 @@ const routes = [
   {path: '/product-differentiation', name: 'ProductDifferentiation', component: ProductDifferentiation},
   {path: '/risk-management', name: 'RiskManagement2', component: RiskManagement2},
   {path: '/target-audience-profiling', name: 'TargetAudienceProfiling', component: TargetAudienceProfiling},
+  // innovative
+  {path: '/feasibility-study' , name: 'FeasibilityStudy', component: FeasibilityStudy},
+
+
+
+
 
 ];
 
