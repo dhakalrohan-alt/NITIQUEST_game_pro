@@ -38,6 +38,8 @@
 </template>
 
 <script>
+import FeasibilityStudy from './innovative/FeasibilityStudy.vue';
+
 export default {
   data() {
     return {
@@ -77,11 +79,13 @@ export default {
         localStorage.setItem('selectedProduct', this.selectedProduct);
         // Determine route based on selected product ID
         let route;
-        if (this.selectedProduct === 1 || this.selectedProduct === 3) {
+        if (this.selectedProduct === 1) {
           route = 'MarketResearch';
         } else if (this.selectedProduct === 2) {
           route = 'BrandPositioning';
-        }
+        }else (this.selectedProduct === 3)
+          route = 'FeasibilityStudy';
+        
         
         // Push to the determined route
         this.$router.push({ name: route });
