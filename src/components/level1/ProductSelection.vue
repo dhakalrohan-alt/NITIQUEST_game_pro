@@ -1,8 +1,19 @@
 <template>
   <div class="product-selection-container">
-    <h1>Select Your Product</h1>
-    <p class="sub_hed">Choose a product type to begin your business journey:</p>
+    <!-- Dashboard -->
+    <div class="dashboard">
+      <div class="player-info">
+        <h3>{{ playerName }}</h3>
+        <p>Business: {{ businessName }}</p>
+        <p>Available Balance: ${{ availableBalance }}</p>
+      </div>
+    </div>
 
+    <!-- Title -->
+    <h1 class="animated-title">Select Your Product</h1>
+    <p class="sub-heading">Choose a product type to begin your business journey:</p>
+
+    <!-- Product Options -->
     <div class="product-options">
       <div
         v-for="(product, index) in products"
@@ -11,38 +22,45 @@
         :class="{ selected: selectedProduct === product.id }"
         @click="selectProduct(product.id)"
       >
-        <h2>{{ product.name }}</h2>
-        <p class="des">{{ product.description }}</p>
-        <p><strong>Risk Level:</strong> {{ product.riskLevel }}</p>
-        <p><strong>Reward Potential:</strong> {{ product.rewardPotential }}</p>
+        <h2 class="product-title">{{ product.name }}</h2>
+        <p class="product-info"><strong>Risk Level:</strong> {{ product.riskLevel }}</p>
+        <p class="product-info"><strong>Reward Potential:</strong> {{ product.rewardPotential }}</p>
+        <div class="product-description">
+          <p>{{ product.description }}</p>
+        </div>
       </div>
     </div>
 
-    <button @click="showPopup = true" class="modern-btn z-10 ">Continue to Market Research</button>
+    <!-- Continue Button -->
+    <button @click="showPopup = true" class="modern-btn">Continue to Market Research</button>
 
-    <div class="circle circle-1"></div>
-    <div class="circle circle-2"></div>
-    <div class="circle circle-3"></div>
-
-    <!-- Popup for Market Research Confirmation -->
+    <!-- Popup for Confirmation -->
     <div v-if="showPopup" class="popup">
       <div class="popup-content">
         <h3>Market Research</h3>
-        <p>Market research is crucial for understanding your target audience, assessing competition, and making informed business decisions. It helps you identify trends, preferences, and potential risks.</p>
+        <p>Market research is crucial for understanding your target audience, assessing competition, and making informed business decisions.</p>
         <p>Are you sure you want to proceed to market research?</p>
         <button @click="proceedToNext" class="confirm-btn">Yes</button>
         <button @click="showPopup = false" class="cancel-btn">No</button>
       </div>
     </div>
+
+    <!-- Background Decorations -->
+    <div class="background-decorations">
+      <div class="decoration-circle"></div>
+      <div class="decoration-circle small"></div>
+      <div class="decoration-circle large"></div>
+    </div>
   </div>
 </template>
 
 <script>
-import FeasibilityStudy from './innovative/FeasibilityStudy.vue';
-
 export default {
   data() {
     return {
+      playerName: localStorage.getItem("playerName") || "Player", // Fetch from localStorage
+      businessName: localStorage.getItem("businessName") || "Your Business", // Fetch from localStorage
+      availableBalance: parseInt(localStorage.getItem("availableBalance")) || 50000, // Fetch or default
       selectedProduct: null,
       showPopup: false,
       products: [
@@ -51,23 +69,23 @@ export default {
           name: "High-Demand, Low-Margin Product",
           description: "A product with high demand but low profit margin. Requires high volume sales.",
           riskLevel: "Low",
-          rewardPotential: "Medium"
+          rewardPotential: "Medium",
         },
         {
           id: 2,
           name: "Niche Product with Dedicated Audience",
           description: "A specialized product with a smaller but more dedicated customer base.",
           riskLevel: "Medium",
-          rewardPotential: "High"
+          rewardPotential: "High",
         },
         {
           id: 3,
           name: "Innovative Product",
           description: "A highly innovative product with great potential but uncertain demand.",
           riskLevel: "High",
-          rewardPotential: "Very High"
-        }
-      ]
+          rewardPotential: "Very High",
+        },
+      ],
     };
   },
   methods: {
@@ -76,193 +94,211 @@ export default {
     },
     proceedToNext() {
       if (this.selectedProduct) {
-        localStorage.setItem('selectedProduct', this.selectedProduct);
+        // Store selectedProduct and availableBalance in localStorage
+        localStorage.setItem("selectedProduct", this.selectedProduct);
+        localStorage.setItem("availableBalance", this.availableBalance);
+
         // Determine route based on selected product ID
         let route;
         if (this.selectedProduct === 1) {
-          route = 'MarketResearch';
+          route = "MarketResearch";
         } else if (this.selectedProduct === 2) {
-          route = 'BrandPositioning';
-        }else (this.selectedProduct === 3)
-          route = 'FeasibilityStudy';
-        
-        
-        // Push to the determined route
+          route = "BrandPositioning";
+        } else if (this.selectedProduct === 3) {
+          route = "FeasibilityStudy";
+        }
         this.$router.push({ name: route });
+      } else {
+        alert("Please select a product before proceeding.");
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
-
 <style scoped>
+/* Container and Layout */
 .product-selection-container {
-  width: 190vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 90vh;
+  min-height: 100vh;
   text-align: center;
-  position: relative;
+  background: linear-gradient(135deg, #eef2f3, #8e9eab);
   overflow: hidden;
-  background: linear-gradient(135deg, #3b5d50, #3774e6, #3b5d50, #000296);
-  background-size: 300% 300%;
-  animation: diagonalShift 12s linear infinite;
-  border-radius: 20px;
-  margin: 30px;
+  position: relative;
+  padding: 20px;
 }
 
-@keyframes diagonalShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+/* Dashboard */
+.dashboard {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: #3774e6;
+  padding: 15px;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
 }
 
+.player-info h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.player-info p {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+/* Title and Sub-heading */
+.animated-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2e3d49;
+  margin-bottom: 0.5rem;
+}
+
+.sub-heading {
+  font-size: 1.2rem;
+  color: #4a6572;
+  margin-bottom: 2rem;
+}
+
+/* Product Cards */
 .product-options {
   display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .product-card {
-  padding: 15px;
-  border: 2px solid #ccc;
-  border-radius: 10px;
   width: 280px;
-  cursor: pointer;
-  transition: transform 0.3s;
-  margin: 10px; /* Added margin for spacing between cards */
-  padding: 30px;
+  padding: 20px;
   border-radius: 15px;
-  max-width: 700px;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  color: #f0f0f0;
-  font-size: 1.1rem;
-}
-
-.product-card.selected {
-  border-color: #3b5d50;
-  background-color: #0069f3;
-  transform: scale(1.05);
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  position: relative;
 }
 
 .product-card:hover {
-  transform: scale(1.03);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.modern-btn {
-  margin-top: 20px;
-  padding: 12px 30px;
-  background: linear-gradient(135deg, #3774e6, #3b5d50);
-  color: white;
-  font-size: 1.2rem;
+.product-card.selected {
+  border: 2px solid #3774e6;
+}
+
+.product-title {
+  font-size: 1.5rem;
   font-weight: bold;
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  margin-bottom: 1rem;
+  color: #333;
 }
 
+.product-info {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.product-description {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* Button */
+.modern-btn {
+  margin-top: 30px;
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, #3774e6, #3b5d50);
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modern-btn:hover {
+  box-shadow: 0 8px 20px rgba(55, 116, 230, 0.6);
+  transform: scale(1.05);
+}
+
+/* Popup */
 .popup {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 10;
 }
 
 .popup-content {
-  background: white;
-  border-radius: 10px;
+  background: #fff;
   padding: 20px;
-  
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
-  max-width: 500px;
-  color: black;
+  max-width: 400px;
 }
 
 .confirm-btn,
 .cancel-btn {
   margin-top: 20px;
-  padding: 12px 30px;
-  background: linear-gradient(135deg, #3774e6, #3b5d50);
-  color: white;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 30px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 25px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
 .confirm-btn {
-  background-color: #3b5d50;
-  color: white;
+  background: #3774e6;
+  color: #fff;
+  border: none;
 }
 
 .cancel-btn {
-  background-color: #ccc;
+  background: #ccc;
+  color: #333;
+  border: none;
 }
 
-h1, .sub_hed {
-  font-family: 'Press Start 2P', sans-serif;
-  color: #f0f0f0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0px 0px 10px rgba(55, 116, 230, 0.6);
-  letter-spacing: 1px;
-}
-
-/* Animated circles */
-.circle {
+/* Background Decorations */
+.background-decorations .decoration-circle {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.5;
-  animation: float 6s ease-in-out infinite;
+  background: rgba(255, 255, 255, 0.2);
+  animation: floatAnimation 6s ease-in-out infinite;
 }
 
-.circle-1 {
-  background: rgba(255, 255, 255, 0.1);
+.decoration-circle.small {
   width: 100px;
   height: 100px;
-  top: 10%;
-  left: 20%;
-  animation-delay: 0s;
+  top: 20%;
+  left: 10%;
 }
 
-.circle-2 {
-  background: rgba(255, 255, 255, 0.2);
-  width: 150px;
-  height: 150px;
-  top: 50%;
-  left: 60%;
-  animation-delay: 2s;
-}
-
-.circle-3 {
-  background: rgba(255, 255, 255, 0.3);
+.decoration-circle.large {
   width: 200px;
   height: 200px;
-  top: 30%;
-  left: 80%;
-  animation-delay: 4s;
+  bottom: 10%;
+  right: 15%;
 }
 
-@keyframes float {
+@keyframes floatAnimation {
   0%, 100% {
     transform: translateY(0);
   }

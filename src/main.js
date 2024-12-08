@@ -4,8 +4,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 import './assets/style.css';
 import store from './store';
 
+
 // Import your views
 import Home from '../views/Home.vue';
+
 import GameLevel1 from '../views/GameLevel1.vue';
 import GameLevel2 from '../views/GameLevel2.vue';
 import Introduction from './components/level1/Introduction.vue';
@@ -44,10 +46,13 @@ import CrisisManagement from './components/level1/innovative/CrisisManagement.vu
 import InnovationMarket from './components/level1/innovative/InnovationMarket.vue';
 import ReflectionEvaluation from './components/level1/innovative/ReflectionEvaluation.vue';
 import LegecyBuilding from './components/level1/innovative/LegecyBuilding.vue';
+import WelCome from './components/level1/WelCome.vue';
 const routes = [
   { path: '/', component: Home },
   { path: '/game-level-1', component: GameLevel1 },
   { path: '/level-2', component: GameLevel2 },
+  //welcome
+  { path: '/wel-come', component: WelCome },
   // Add more game levels here
   { path: '/intro', name: 'Introduction', component: Introduction },
   { path: '/product-selection', name: 'ProductSelection', component: ProductSelection },
