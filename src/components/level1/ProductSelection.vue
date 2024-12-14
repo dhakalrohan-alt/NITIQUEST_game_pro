@@ -1,56 +1,44 @@
 <template>
   <div class="product-selection-container">
-    <!-- Dashboard -->
+    <h1>Select Your Product</h1>
+    <p class="sub-heading">Choose a product type to begin your business journey:</p>
+
+    <!-- Display Player Details and Budget -->
     <div class="dashboard">
       <div class="player-info">
         <h3>{{ playerName }}</h3>
         <p>Business: {{ businessName }}</p>
-        <p>Available Balance: ${{ availableBalance }}</p>
+        <p><strong>Available Balance:</strong> ${{ availableBalance }}</p>
       </div>
+      <!-- Reset Game Button -->
+      <button @click="resetGame" class="reset-btn">Reset Game</button>
     </div>
-
-    <!-- Title -->
-    <h1 class="animated-title">Select Your Product</h1>
-    <p class="sub-heading">Choose a product type to begin your business journey:</p>
 
     <!-- Product Options -->
     <div class="product-options">
       <div
-        v-for="(product, index) in products"
-        :key="index"
+        v-for="product in products"
+        :key="product.id"
         class="product-card"
         :class="{ selected: selectedProduct === product.id }"
-        @click="selectProduct(product.id)"
+        @click="selectProduct(product)"
       >
-        <h2 class="product-title">{{ product.name }}</h2>
-        <p class="product-info"><strong>Risk Level:</strong> {{ product.riskLevel }}</p>
-        <p class="product-info"><strong>Reward Potential:</strong> {{ product.rewardPotential }}</p>
-        <div class="product-description">
-          <p>{{ product.description }}</p>
-        </div>
+        <h2>{{ product.name }}</h2>
+        <p class="description">{{ product.description }}</p>
+        <p><strong>Risk Level:</strong> {{ product.riskLevel }}</p>
+        <p><strong>Reward Potential:</strong> {{ product.rewardPotential }}</p>
+        <p><strong>Cost:</strong> ${{ product.cost }}</p>
       </div>
     </div>
 
     <!-- Continue Button -->
-    <button @click="showPopup = true" class="modern-btn">Continue to Market Research</button>
-
-    <!-- Popup for Confirmation -->
-    <div v-if="showPopup" class="popup">
-      <div class="popup-content">
-        <h3>Market Research</h3>
-        <p>Market research is crucial for understanding your target audience, assessing competition, and making informed business decisions.</p>
-        <p>Are you sure you want to proceed to market research?</p>
-        <button @click="proceedToNext" class="confirm-btn">Yes</button>
-        <button @click="showPopup = false" class="cancel-btn">No</button>
-      </div>
-    </div>
-
-    <!-- Background Decorations -->
-    <div class="background-decorations">
-      <div class="decoration-circle"></div>
-      <div class="decoration-circle small"></div>
-      <div class="decoration-circle large"></div>
-    </div>
+    <button
+      :disabled="!selectedProduct"
+      @click="proceedToNextLevel"
+      class="next-btn"
+    >
+      Continue to Next Level
+    </button>
   </div>
 </template>
 
@@ -60,9 +48,8 @@ export default {
     return {
       playerName: localStorage.getItem("playerName") || "Player", // Fetch from localStorage
       businessName: localStorage.getItem("businessName") || "Your Business", // Fetch from localStorage
-      availableBalance: parseInt(localStorage.getItem("availableBalance")) || 50000, // Fetch or default
+      availableBalance: parseInt(localStorage.getItem("availableBalance")) || 50000, // Initial balance
       selectedProduct: null,
-      showPopup: false,
       products: [
         {
           id: 1,
@@ -70,6 +57,7 @@ export default {
           description: "A product with high demand but low profit margin. Requires high volume sales.",
           riskLevel: "Low",
           rewardPotential: "Medium",
+          cost: 5000,
         },
         {
           id: 2,
@@ -77,6 +65,7 @@ export default {
           description: "A specialized product with a smaller but more dedicated customer base.",
           riskLevel: "Medium",
           rewardPotential: "High",
+          cost: 7000,
         },
         {
           id: 3,
@@ -84,32 +73,44 @@ export default {
           description: "A highly innovative product with great potential but uncertain demand.",
           riskLevel: "High",
           rewardPotential: "Very High",
+          cost: 10000,
         },
       ],
     };
   },
   methods: {
-    selectProduct(productId) {
-      this.selectedProduct = productId;
+    selectProduct(product) {
+      if (this.availableBalance >= product.cost) {
+        this.selectedProduct = product.id;
+        this.availableBalance -= product.cost; // Deduct the cost
+        localStorage.setItem("availableBalance", this.availableBalance); // Update localStorage
+      } else {
+        alert("Insufficient balance to select this product.");
+      }
     },
-    proceedToNext() {
+    proceedToNextLevel() {
       if (this.selectedProduct) {
-        // Store selectedProduct and availableBalance in localStorage
-        localStorage.setItem("selectedProduct", this.selectedProduct);
-        localStorage.setItem("availableBalance", this.availableBalance);
-
-        // Determine route based on selected product ID
-        let route;
+        localStorage.setItem("selectedProduct", this.selectedProduct); // Save selected product
+        // Conditional routing based on selected product
         if (this.selectedProduct === 1) {
-          route = "MarketResearch";
+          this.$router.push("/market-research"); // Redirect to Market Research
         } else if (this.selectedProduct === 2) {
-          route = "BrandPositioning";
+          this.$router.push("/niche-product-level"); // Redirect to Niche Product Level
         } else if (this.selectedProduct === 3) {
-          route = "FeasibilityStudy";
+          this.$router.push("/feasibility-study"); // Redirect to Feasibility Study
         }
-        this.$router.push({ name: route });
       } else {
         alert("Please select a product before proceeding.");
+      }
+    },
+    resetGame() {
+      if (confirm("Are you sure you want to reset the game?")) {
+        // Reset balance and selected product
+        localStorage.setItem("availableBalance", 50000);
+        localStorage.removeItem("selectedProduct");
+        this.availableBalance = 50000;
+        this.selectedProduct = null;
+        alert("Game has been reset to the initial state!");
       }
     },
   },
@@ -117,193 +118,110 @@ export default {
 </script>
 
 <style scoped>
-/* Container and Layout */
+/* Full Page Styling */
 .product-selection-container {
+  text-align: center;
+  padding: 20px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  text-align: center;
-  background: linear-gradient(135deg, #eef2f3, #8e9eab);
-  overflow: hidden;
-  position: relative;
-  padding: 20px;
+  background: linear-gradient(135deg, #e0f7fa, #80deea);
+  color: #333;
+  font-family: 'Roboto', sans-serif;
 }
 
-/* Dashboard */
+/* Dashboard Styling */
 .dashboard {
   width: 100%;
+  max-width: 600px;
   display: flex;
-  justify-content: center;
-  background: #3774e6;
+  justify-content: space-between;
+  align-items: center;
+  background: #00796b;
+  color: white;
   padding: 15px;
-  color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
   margin-bottom: 20px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.player-info h3 {
-  margin: 0;
-  font-size: 1.5rem;
+.player-info {
+  text-align: left;
 }
 
-.player-info p {
-  margin: 0;
-  font-size: 1.2rem;
+/* Reset Button */
+.reset-btn {
+  background: #d32f2f;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-/* Title and Sub-heading */
-.animated-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #2e3d49;
-  margin-bottom: 0.5rem;
+.reset-btn:hover {
+  background: #b71c1c;
 }
 
-.sub-heading {
-  font-size: 1.2rem;
-  color: #4a6572;
-  margin-bottom: 2rem;
-}
-
-/* Product Cards */
+/* Product Options Styling */
 .product-options {
   display: flex;
-  justify-content: center;
-  gap: 20px;
   flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .product-card {
-  width: 280px;
-  padding: 20px;
-  border-radius: 15px;
-  background: #fff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
+  width: 250px;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  position: relative;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
 }
 
 .product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 .product-card.selected {
-  border: 2px solid #3774e6;
+  border: 2px solid #28a745;
+  background: #c8e6c9;
 }
 
-.product-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.product-info {
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.product-description {
-  margin-top: 1rem;
-  font-size: 0.85rem;
-  color: #777;
-}
-
-/* Button */
-.modern-btn {
-  margin-top: 30px;
-  padding: 12px 25px;
-  font-size: 1.1rem;
-  background: linear-gradient(135deg, #3774e6, #3b5d50);
-  color: #fff;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.modern-btn:hover {
-  box-shadow: 0 8px 20px rgba(55, 116, 230, 0.6);
-  transform: scale(1.05);
-}
-
-/* Popup */
-.popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-}
-
-.popup-content {
-  background: #fff;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
-  max-width: 400px;
-}
-
-.confirm-btn,
-.cancel-btn {
+/* Button Styling */
+.next-btn {
   margin-top: 20px;
-  padding: 10px 20px;
+  padding: 12px 30px;
+  background: #388e3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
   font-size: 1rem;
-  border-radius: 25px;
   cursor: pointer;
+  transition: background 0.3s;
 }
 
-.confirm-btn {
-  background: #3774e6;
-  color: #fff;
-  border: none;
+.next-btn:disabled {
+  background: #a6a6a6;
+  cursor: not-allowed;
 }
 
-.cancel-btn {
-  background: #ccc;
-  color: #333;
-  border: none;
+.next-btn:hover:enabled {
+  background: #2e7d32;
 }
 
-/* Background Decorations */
-.background-decorations .decoration-circle {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  animation: floatAnimation 6s ease-in-out infinite;
-}
-
-.decoration-circle.small {
-  width: 100px;
-  height: 100px;
-  top: 20%;
-  left: 10%;
-}
-
-.decoration-circle.large {
-  width: 200px;
-  height: 200px;
-  bottom: 10%;
-  right: 15%;
-}
-
-@keyframes floatAnimation {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
+/* Sub-heading Styling */
+.sub-heading {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 20px;
 }
 </style>
